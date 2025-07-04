@@ -127,6 +127,13 @@ bool Valid_Place(std::array<char,SS>& Board, int CO){
 
 }
 
+void Place_Many(std::array<char, SS>& Board, char Type, std::set<int> Pieces){
+ for(int Piece : Pieces){
+  Board[Piece] = Type;
+ }
+ return;
+}
+
 bool Place(std::array<char,SS>& Board, char Player, int CO){
  try{
   Valid_Place(Board, CO);
@@ -137,16 +144,34 @@ bool Place(std::array<char,SS>& Board, char Player, int CO){
   }
 
  std::array<int, 4>neigbours = Get_Neigbours(CO);
+ std::array<char*,4>neigbours_ptr;
+ for(int i = 0; i < 4; i++){
+  if(neigbours[i] == -1){
+   neigbours_ptr[i] = NULL;
+  } 
+  else{
+   neigbours_ptr[i] = &Board[neigbours[i]];
+  }
+ }
+
+ //POINTER TEST//
+ std::cout << "Neigbour POINTER TEST \n";
+ for(char* neib : neigbours_ptr){
+  if(neib != NULL){
+   std::cout << *neib << "\n";
+  }
+ }
 
  Board[CO] = Player; // Updated board with new placement
  char Opp = Switch_Player(Player);
  
- for (int neigbour : neigbours){
-  if (neigbour == -1){
+ for (int i = 0; i < 4; i++){
+  if (neigbours[i] == -1){
    continue;
   }
-  else if (Board[neigbour] == Opp){
-    std::set<int> test = Potential_capture(Board, Opp, neigbour);
+  else if (*neigbours_ptr[i] == Opp){
+    std::set<int> test = Potential_capture(Board, Opp, neigbours[i]);
+    Place_Many(Board, Empty, test);
     std::cout << "Printing capture\n";
     for (int piece : test){
      std::cout << piece << "\n";
@@ -158,12 +183,13 @@ bool Place(std::array<char,SS>& Board, char Player, int CO){
  }
 
 
-void Place_Many(std::array<int, SS>& Board, char Type, std::set<int> Pieces){
+/*void Place_Many(std::array<int, SS>& Board, char Type, std::set<int> Pieces){
  for(int Piece : Pieces){
   Board[Piece] = Type;
  }
  return;
 }
+*/
 
 int main()
 {
